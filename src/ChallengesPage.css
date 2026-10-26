@@ -1,0 +1,387 @@
+/* ==========================================================================
+   SinauPy — Challenges Page Styles (Tantangan Berjenjang)
+   Distinct Borders, Framed Callouts, High Contrast Boundaries
+   ========================================================================== */
+
+.challenges-page {
+  width: min(1200px, calc(100% - 48px));
+  margin: 0 auto;
+  padding: 24px 0 64px;
+}
+
+.challenges-top-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 2px solid #DCE6F2;
+  flex-wrap: wrap;
+}
+
+.student-status-strip {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: #FFFFFF;
+  border: 1.5px solid #DCE6F2;
+  border-radius: 10px;
+  padding: 8px 16px;
+  box-shadow: 0 2px 8px rgba(23, 54, 93, 0.04);
+  flex-wrap: wrap;
+}
+
+.student-info-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.strip-avatar-badge {
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  background: #DCEBFA;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.strip-icon {
+  color: #315D9B;
+  width: 16px;
+  height: 16px;
+}
+
+.strip-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.strip-kicker {
+  font-size: 0.64rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  color: #60758F;
+}
+
+.strip-name {
+  font-size: 0.82rem;
+  color: #17365D;
+}
+
+.name-not-set {
+  color: #b45309;
+  font-weight: 700;
+}
+
+.strip-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.strip-btn-edit {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #FFFFFF;
+  border: 1.5px solid #DCE6F2;
+  color: #315D9B;
+  font-size: 0.78rem;
+  font-weight: 750;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.strip-btn-edit:hover {
+  background: #F4F7FB;
+  border-color: #315D9B;
+}
+
+.strip-btn-score {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #f0fdf4;
+  border: 1.5px solid #bbf7d0;
+  color: #187447;
+  font-size: 0.78rem;
+  font-weight: 750;
+  padding: 6px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.strip-btn-score:hover {
+  background: #dcfce7;
+  border-color: #86efac;
+}
+
+/* Group Redirect Banner */
+.group-redirect-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  background: #eff6ff;
+  border: 1.5px solid #bfdbfe;
+  border-left: 5px solid #315D9B;
+  border-radius: 10px;
+  padding: 14px 20px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+
+.redirect-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+  min-width: 260px;
+}
+
+.redirect-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #315D9B;
+  color: #FFFFFF;
+  font-size: 0.7rem;
+  font-weight: 800;
+  padding: 4px 10px;
+  border-radius: 6px;
+  flex-shrink: 0;
+  letter-spacing: 0.05em;
+}
+
+.redirect-text {
+  font-size: 0.86rem;
+  color: #17365D;
+  line-height: 1.5;
+}
+
+.redirect-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #315D9B;
+  border: 1px solid #315D9B;
+  color: #FFFFFF;
+  font-size: 0.82rem;
+  font-weight: 750;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.18s ease;
+  white-space: nowrap;
+}
+
+.redirect-btn:hover {
+  background: #254b80;
+  transform: translateY(-1px);
+}
+
+.challenges-page-heading {
+  margin-bottom: 28px;
+}
+
+.challenges-page-heading h1 {
+  margin: 6px 0 10px;
+  color: #17365D;
+  font-size: clamp(1.8rem, 3vw, 2.3rem);
+  font-weight: 850;
+  line-height: 1.2;
+  letter-spacing: -0.03em;
+}
+
+.challenges-page-heading p {
+  margin: 0;
+  color: #60758F;
+  font-size: 0.94rem;
+  line-height: 1.6;
+  max-width: 760px;
+}
+
+/* --------------------------------------------------------------------------
+   2-Tab Nav Segment (Individu & HOTS)
+   -------------------------------------------------------------------------- */
+.challenge-tabs-nav {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.tab-btn {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 20px;
+  background: #FFFFFF;
+  border: 2px solid #DCE6F2;
+  border-radius: 12px;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.tab-btn:hover {
+  border-color: #315D9B;
+  background: #F4F7FB;
+  transform: translateY(-1px);
+}
+
+.tab-btn.active {
+  border-color: #315D9B;
+  background: #DCEBFA;
+  box-shadow: 0 4px 14px rgba(49, 93, 155, 0.12);
+}
+
+.tab-icon-wrap {
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  background: #F4F7FB;
+  border: 1px solid #DCE6F2;
+  color: #315D9B;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.tab-btn.active .tab-icon-wrap {
+  background: #315D9B;
+  border-color: #315D9B;
+  color: #FFFFFF;
+}
+
+.tab-texts {
+  flex: 1;
+}
+
+.tab-title {
+  display: block;
+  font-size: 0.96rem;
+  font-weight: 800;
+  color: #17365D;
+  line-height: 1.25;
+}
+
+.tab-desc {
+  display: block;
+  font-size: 0.74rem;
+  color: #60758F;
+  margin-top: 2px;
+}
+
+.tab-counter {
+  font-size: 0.74rem;
+  font-weight: 750;
+  color: #315D9B;
+  background: #FFFFFF;
+  border: 1px solid #DCE6F2;
+  padding: 4px 10px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+/* --------------------------------------------------------------------------
+   Tab Intro Card & Level Filters (Framed Callout)
+   -------------------------------------------------------------------------- */
+.tab-intro-card {
+  background: #FFFFFF;
+  border: 2px solid #DCE6F2;
+  border-radius: 12px;
+  padding: 20px 24px;
+  margin-bottom: 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  box-shadow: 0 2px 10px rgba(23, 54, 93, 0.03);
+}
+
+.tab-intro-text p {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #17365D;
+  line-height: 1.6;
+}
+
+.level-filters {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding-top: 14px;
+  border-top: 1.5px solid #DCE6F2;
+  flex-wrap: wrap;
+}
+
+.tab-progress-indicator {
+  font-size: 0.82rem;
+  color: #60758F;
+}
+
+.tab-progress-indicator strong {
+  color: #315D9B;
+  font-weight: 800;
+}
+
+.level-btn-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.lvl-pill {
+  background: #FFFFFF;
+  border: 1.5px solid #DCE6F2;
+  border-radius: 6px;
+  padding: 6px 12px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #17365D;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.lvl-pill:hover {
+  border-color: #315D9B;
+  background: #F4F7FB;
+}
+
+.lvl-pill.active {
+  background: #315D9B;
+  border-color: #315D9B;
+  color: #FFFFFF;
+}
+
+/* Challenges List Container */
+.challenges-list-container {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+@media (max-width: 768px) {
+  .challenges-page {
+    width: calc(100% - 32px);
+  }
+
+  .challenge-tabs-nav {
+    grid-template-columns: 1fr;
+  }
+
+  .level-filters {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}

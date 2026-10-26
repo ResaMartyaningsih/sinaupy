@@ -1,0 +1,335 @@
+/* ==========================================================================
+   SinauPy — Code Playground Component
+   Editor Koding Mandiri, Interpreter Pyodide & Terminal Konsol Interaktif
+   Theme: Crisp Borders, Structured Bounded Workspace, Interactive Terminal
+   ========================================================================== */
+
+@import './InteractiveTerminal.css';
+
+.code-playground {
+  margin-top: 24px;
+  border: 2px solid #DCE6F2;
+  border-radius: 14px;
+  background: #FFFFFF;
+  box-shadow: 0 4px 16px rgba(23, 54, 93, 0.04);
+  overflow: hidden;
+  transition: border-color 0.2s ease;
+}
+
+.code-playground:focus-within {
+  border-color: #315D9B;
+}
+
+/* Header Strip */
+.playground-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 18px;
+  background: #F4F7FB;
+  border-bottom: 2px solid #DCE6F2;
+  flex-wrap: wrap;
+}
+
+.playground-kicker {
+  display: block;
+  color: #315D9B;
+  font-size: 0.7rem;
+  font-weight: 850;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin-bottom: 2px;
+}
+
+.playground-heading h4 {
+  margin: 0;
+  color: #17365D;
+  font-size: 1.05rem;
+  font-weight: 850;
+  letter-spacing: -0.01em;
+}
+
+.playground-badges {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.anti-paste-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 6px;
+  background: #e2e8f0;
+  border: 1px solid #cbd5e1;
+  color: #1e293b;
+  font-size: 0.72rem;
+  font-weight: 750;
+}
+
+.anti-paste-badge svg {
+  color: #475569;
+}
+
+.playground-language {
+  padding: 4px 10px;
+  border-radius: 6px;
+  color: #315D9B;
+  background: #DCEBFA;
+  border: 1px solid #bfdbfe;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 800;
+}
+
+/* Framed Instructions Box */
+.playground-instructions {
+  margin: 16px 18px 12px;
+  padding: 14px 18px;
+  border: 1.5px solid #DCE6F2;
+  border-left: 5px solid #315D9B;
+  border-radius: 8px;
+  background: #F4F7FB;
+  color: #17365D;
+  font-size: 0.9rem;
+  line-height: 1.6;
+  font-weight: 500;
+}
+
+/* Framed Hints Box */
+.playground-hints {
+  margin: 0 18px 16px;
+  padding: 12px 18px;
+  border: 1.5px solid #DCE6F2;
+  border-radius: 8px;
+  background: #FFFFFF;
+}
+
+.playground-hints strong {
+  display: block;
+  font-size: 0.76rem;
+  color: #315D9B;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 6px;
+}
+
+.playground-hints ol {
+  margin: 0;
+  padding-left: 20px;
+  color: #334e68;
+  font-size: 0.85rem;
+  line-height: 1.55;
+}
+
+.playground-hints li {
+  margin-bottom: 4px;
+}
+
+/* Anti-Paste Warning Banner */
+.paste-warning-banner {
+  margin: 0 18px 16px;
+  padding: 12px 16px;
+  background: #fffbeb;
+  border: 1.5px solid #fde68a;
+  border-left: 5px solid #f59e0b;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  animation: bannerFadeIn 0.25s ease both;
+}
+
+@keyframes bannerFadeIn {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.paste-warning-icon {
+  color: #d97706;
+  flex-shrink: 0;
+  display: flex;
+}
+
+.paste-warning-text {
+  font-size: 0.83rem;
+  color: #92400e;
+  font-weight: 600;
+  line-height: 1.5;
+  flex: 1;
+}
+
+.paste-warning-close {
+  background: transparent;
+  border: none;
+  color: #b45309;
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  border-radius: 4px;
+}
+
+.paste-warning-close:hover {
+  background: rgba(245, 158, 11, 0.15);
+}
+
+/* Online Python IDE Workspace Frame */
+.playground-ide-frame {
+  margin: 0 18px 20px;
+  border: 2px solid #1e293b;
+  border-radius: 12px;
+  background: #091222;
+  overflow: hidden;
+  box-shadow: 0 10px 28px rgba(7, 13, 24, 0.45);
+}
+
+/* IDE Top Toolbar */
+.playground-ide-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 14px;
+  background: #0b1526;
+  border-bottom: 2px solid #1e293b;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.ide-toolbar-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.ide-file-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #091222;
+  border: 1.5px solid #1e293b;
+  border-bottom: none;
+  padding: 6px 14px;
+  border-radius: 8px 8px 0 0;
+  color: #f8fafc;
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  font-weight: 750;
+}
+
+.ide-file-tab.active {
+  border-top: 2.5px solid #38bdf8;
+  color: #38bdf8;
+  background: #0f1c30;
+}
+
+.tab-py-icon {
+  width: 15px;
+  height: 15px;
+  color: #facc15;
+}
+
+.tab-meta {
+  font-size: 0.72rem;
+  color: #64748b;
+  font-weight: 600;
+  margin-left: 4px;
+}
+
+/* Toolbar Buttons & Status */
+.ide-toolbar-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.ide-run-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 16px;
+  background: #16a34a;
+  border: 1px solid #15803d;
+  color: #FFFFFF;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  box-shadow: 0 2px 8px rgba(22, 163, 74, 0.35);
+}
+
+.ide-run-btn:hover:not(:disabled) {
+  background: #15803d;
+  transform: translateY(-1px);
+}
+
+.ide-run-btn:disabled {
+  opacity: 0.7;
+  cursor: wait;
+}
+
+.ide-stop-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 12px;
+  background: #dc2626;
+  border: 1px solid #b91c1c;
+  color: #ffffff;
+  border-radius: 6px;
+  font-size: 0.78rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.ide-stop-btn:hover {
+  background: #b91c1c;
+}
+
+.ide-clear-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 12px;
+  background: #1e293b;
+  border: 1px solid #334155;
+  color: #cbd5e1;
+  border-radius: 6px;
+  font-size: 0.78rem;
+  font-weight: 750;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.ide-clear-btn:hover {
+  background: #334155;
+  color: #ffffff;
+}
+
+.ide-status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 800;
+  font-family: var(--font-mono);
+}
+
+/* Editor & Terminal Panes */
+.playground-editor-pane {
+  background: #091222;
+  border-bottom: 2px solid #1e293b;
+}
+
+.playground-terminal-pane .interactive-terminal-container {
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+}

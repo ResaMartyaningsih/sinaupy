@@ -1,0 +1,121 @@
+.case-study {
+  margin-top: 42px;
+  padding: clamp(19px, 4vw, 32px);
+  border: 1px solid #f0e1c1;
+  border-radius: 18px;
+  background: linear-gradient(145deg, #fffdf7, #fff8e9);
+}
+
+.case-study-heading {
+  max-width: 720px;
+}
+
+.case-study-heading h2 {
+  margin: 0;
+  color: #172440;
+  font-size: clamp(1.5rem, 4vw, 2.1rem);
+  letter-spacing: -0.045em;
+}
+
+.case-study-heading > p:last-child {
+  margin: 10px 0 0;
+  color: #68758c;
+  font-size: 0.9rem;
+  line-height: 1.7;
+}
+
+.case-study-brief {
+  display: grid;
+  grid-template-columns: 1fr 0.55fr;
+  gap: 12px;
+  margin-top: 21px;
+}
+
+.case-study-brief > div {
+  padding: 13px 14px;
+  border: 1px solid #f0e7d2;
+  border-radius: 11px;
+  background: rgb(255 255 255 / 75%);
+}
+
+.case-study-brief > div:last-child {
+  grid-column: 1 / -1;
+}
+
+.case-study-brief span {
+  color: #9a8354;
+  font-size: 0.62rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+}
+
+.case-study-brief p,
+.case-study-rubric p {
+  margin: 5px 0 0;
+  color: #4f5d73;
+  font-size: 0.83rem;
+  line-height: 1.6;
+}
+
+.case-study-rubric {
+  margin-top: 13px;
+  padding: 14px;
+  border-left: 3px solid #e4b64e;
+  border-radius: 0 10px 10px 0;
+  background: #fff;
+}
+
+.case-study-rubric strong {
+  color: #34445f;
+  font-size: 0.8rem;
+}
+
+.case-study-rubric .case-study-reflection {
+  margin-top: 8px;
+  color: #936f24;
+  font-weight: 650;
+}
+
+.case-study .code-playground {
+  border-color: #eee3ca;
+  background: #fff;
+}
+
+.new-case-button {
+  margin-top: 13px;
+  padding: 8px 11px;
+  border: 1px solid #ecd9ad;
+  border-radius: 8px;
+  color: #80611f;
+  background: #fff;
+  font: inherit;
+  font-size: 0.75rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.new-case-button:hover {
+  background: #fffaf0;
+}
+
+.new-case-button:focus-visible {
+  outline: 3px solid #e4b64e;
+  outline-offset: 2px;
+}
+
+.case-study-note {
+  margin: 14px 0 0;
+  color: #7c7a70;
+  font-size: 0.72rem;
+  line-height: 1.6;
+}
+
+@media (max-width: 560px) {
+  .case-study-brief {
+    grid-template-columns: 1fr;
+  }
+
+  .case-study-brief > div:last-child {
+    grid-column: auto;
+  }
+}

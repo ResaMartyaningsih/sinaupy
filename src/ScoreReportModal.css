@@ -1,0 +1,563 @@
+/* ==========================================================================
+   SinauPy — Score Report Modal Styles
+   Lembar Asesmen Nilai Akademik & Print / Export Styles
+   Theme: Document Layout, Crisp Borders, Professional Academic Design
+   ========================================================================== */
+
+.score-report-dialog {
+  width: min(840px, calc(100% - 32px));
+  max-height: 92vh;
+  display: flex;
+  flex-direction: column;
+  background: #FFFFFF;
+}
+
+.score-report-content {
+  padding: 24px 28px;
+  overflow-y: auto;
+  background: #FFFFFF;
+}
+
+/* --------------------------------------------------------------------------
+   Academic Kop Header (Document Formatted)
+   -------------------------------------------------------------------------- */
+.academic-doc-header {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.doc-kop-kicker {
+  font-size: 0.76rem;
+  font-weight: 850;
+  letter-spacing: 0.08em;
+  color: #315D9B;
+  text-transform: uppercase;
+}
+
+.doc-kop-title {
+  font-size: 1.25rem;
+  font-weight: 850;
+  color: #17365D;
+  margin: 2px 0;
+  letter-spacing: -0.01em;
+}
+
+.doc-kop-sub {
+  font-size: 0.8rem;
+  color: #60758F;
+}
+
+.doc-header-divider {
+  height: 3px;
+  border-top: 1.5px solid #17365D;
+  border-bottom: 3.5px double #17365D;
+  margin: 10px 0 14px;
+}
+
+.doc-main-heading {
+  font-size: 0.96rem;
+  font-weight: 850;
+  color: #17365D;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  text-decoration: underline;
+  margin: 0;
+}
+
+/* --------------------------------------------------------------------------
+   Student & Group Identity Box
+   -------------------------------------------------------------------------- */
+.doc-identity-box {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: 20px;
+  background: #F4F7FB;
+  border: 1.5px solid #DCE6F2;
+  border-left: 5px solid #315D9B;
+  border-radius: 10px;
+  padding: 16px 20px;
+  margin-bottom: 20px;
+}
+
+@media (max-width: 640px) {
+  .doc-identity-box {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+}
+
+.identity-grid-col {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.id-row {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  font-size: 0.84rem;
+}
+
+.id-label {
+  font-weight: 750;
+  color: #475569;
+  min-width: 105px;
+  flex-shrink: 0;
+}
+
+.id-value {
+  color: #17365D;
+  font-weight: 600;
+}
+
+.id-value.strong-navy {
+  font-size: 0.94rem;
+  font-weight: 850;
+  color: #17365D;
+}
+
+.id-value.score-highlight {
+  font-weight: 850;
+  color: #315D9B;
+}
+
+.id-value.predicate-badge {
+  font-weight: 800;
+  color: #065f46;
+  background: #ecfdf5;
+  border: 1px solid #a7f3d0;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 0.78rem;
+}
+
+.id-members {
+  font-size: 0.8rem;
+  color: #334155;
+  line-height: 1.4;
+}
+
+.btn-edit-inline {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #FFFFFF;
+  border: 1.5px solid #DCE6F2;
+  padding: 5px 10px;
+  border-radius: 6px;
+  font-size: 0.76rem;
+  font-weight: 750;
+  color: #315D9B;
+  cursor: pointer;
+  align-self: flex-start;
+  margin-top: 4px;
+  transition: all 0.15s ease;
+}
+
+.btn-edit-inline:hover {
+  background: #DCEBFA;
+  border-color: #315D9B;
+}
+
+/* --------------------------------------------------------------------------
+   Summary Cards Grid
+   -------------------------------------------------------------------------- */
+.score-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-bottom: 22px;
+}
+
+@media (max-width: 680px) {
+  .score-summary-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.summary-card {
+  background: #FFFFFF;
+  border: 1.5px solid #DCE6F2;
+  border-radius: 10px;
+  padding: 12px 14px;
+  text-align: center;
+}
+
+.summary-card.total {
+  background: #eff6ff;
+  border-color: #315D9B;
+  border-width: 2px;
+}
+
+.summary-card.total .summary-value {
+  color: #315D9B;
+}
+
+.summary-label {
+  display: block;
+  font-size: 0.68rem;
+  font-weight: 850;
+  color: #60758F;
+  letter-spacing: 0.04em;
+  margin-bottom: 4px;
+}
+
+.summary-value {
+  font-size: 1.45rem;
+  font-weight: 850;
+  color: #17365D;
+  line-height: 1.2;
+}
+
+.summary-sub {
+  display: block;
+  font-size: 0.72rem;
+  color: #60758F;
+  margin-top: 3px;
+}
+
+/* --------------------------------------------------------------------------
+   Tasks & Score Table
+   -------------------------------------------------------------------------- */
+.score-table-wrap {
+  border: 2px solid #DCE6F2;
+  border-radius: 10px;
+  overflow: hidden;
+  margin-bottom: 20px;
+}
+
+.score-table-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 16px;
+  background: #F4F7FB;
+  border-bottom: 1.5px solid #DCE6F2;
+}
+
+.score-table-header h4 {
+  margin: 0;
+  font-size: 0.84rem;
+  font-weight: 850;
+  color: #17365D;
+}
+
+.score-count-badge {
+  font-size: 0.74rem;
+  font-weight: 800;
+  color: #315D9B;
+  background: #DCEBFA;
+  border: 1px solid #bfdbfe;
+  padding: 2px 8px;
+  border-radius: 999px;
+}
+
+.empty-scores {
+  text-align: center;
+  padding: 36px 20px;
+  background: #FFFFFF;
+}
+
+.empty-scores-icon {
+  width: 36px;
+  height: 36px;
+  color: #94a3b8;
+  margin-bottom: 8px;
+}
+
+.empty-scores p {
+  margin: 0 0 6px;
+  font-weight: 800;
+  color: #17365D;
+  font-size: 0.92rem;
+}
+
+.empty-scores small {
+  color: #60758F;
+  font-size: 0.8rem;
+  max-width: 480px;
+  display: inline-block;
+  line-height: 1.55;
+}
+
+.score-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.82rem;
+  background: #FFFFFF;
+}
+
+.score-table th {
+  background: #F4F7FB;
+  color: #17365D;
+  font-weight: 800;
+  padding: 10px 12px;
+  text-align: left;
+  border-bottom: 1.5px solid #DCE6F2;
+  font-size: 0.78rem;
+  letter-spacing: 0.02em;
+}
+
+.score-table td {
+  padding: 11px 12px;
+  border-bottom: 1px solid #E2E8F0;
+  color: #17365D;
+}
+
+.score-table tbody tr:hover {
+  background: #F8FAFD;
+}
+
+.col-center {
+  text-align: center;
+}
+
+.col-date {
+  color: #60758F;
+  font-size: 0.75rem;
+}
+
+.cat-pill {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 6px;
+  font-size: 0.72rem;
+  font-weight: 750;
+}
+
+.cat-individu {
+  background: #DCEBFA;
+  color: #17365D;
+  border: 1px solid #bfdbfe;
+}
+
+.cat-kelompok {
+  background: #fef3c7;
+  color: #92400e;
+  border: 1px solid #fde68a;
+}
+
+.cat-hots {
+  background: #f1f5f9;
+  color: #334155;
+  border: 1px solid #cbd5e1;
+}
+
+.score-pill {
+  display: inline-block;
+  background: #ecfdf5;
+  color: #065f46;
+  border: 1px solid #a7f3d0;
+  font-weight: 850;
+  padding: 3px 8px;
+  border-radius: 6px;
+  font-size: 0.78rem;
+  font-family: var(--font-mono);
+}
+
+.status-pill-done {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: #15803d;
+  font-size: 0.74rem;
+  font-weight: 800;
+}
+
+/* --------------------------------------------------------------------------
+   Academic Signature Block
+   -------------------------------------------------------------------------- */
+.academic-signatures-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  margin: 28px 0 16px;
+  padding-top: 18px;
+  border-top: 1.5px solid #DCE6F2;
+}
+
+.sig-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  font-size: 0.82rem;
+  color: #17365D;
+}
+
+.sig-title {
+  font-size: 0.8rem;
+  color: #60758F;
+}
+
+.sig-role {
+  font-weight: 750;
+  margin-top: 2px;
+}
+
+.sig-spacer {
+  height: 52px;
+}
+
+.sig-line {
+  font-size: 0.82rem;
+  color: #17365D;
+}
+
+.sig-nip {
+  font-size: 0.74rem;
+  color: #60758F;
+  margin-top: 3px;
+}
+
+.score-report-footer {
+  margin-top: 12px;
+  font-size: 0.76rem;
+  color: #60758F;
+  line-height: 1.5;
+}
+
+/* --------------------------------------------------------------------------
+   Modal Actions Footer & Export Buttons
+   -------------------------------------------------------------------------- */
+.modal-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 24px;
+  background: #F4F7FB;
+  border-top: 2px solid #DCE6F2;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.modal-actions-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.btn-reset {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: transparent;
+  border: 1.5px solid #fca5a5;
+  color: #dc2626;
+  padding: 8px 14px;
+  border-radius: 8px;
+  font-size: 0.78rem;
+  font-weight: 750;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-reset:hover {
+  background: #fee2e2;
+}
+
+.btn-download-word {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 9px 16px;
+  border-radius: 8px;
+  background: #2563eb;
+  border: 1.5px solid #2563eb;
+  color: #FFFFFF;
+  font-weight: 800;
+  font-size: 0.82rem;
+  cursor: pointer;
+  transition: all 0.18s ease;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
+}
+
+.btn-download-word:hover {
+  background: #1d4ed8;
+  border-color: #1d4ed8;
+  transform: translateY(-1px);
+}
+
+.btn-download-pdf {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 9px 16px;
+  border-radius: 8px;
+  background: #17365D;
+  border: 1.5px solid #17365D;
+  color: #FFFFFF;
+  font-weight: 800;
+  font-size: 0.82rem;
+  cursor: pointer;
+  transition: all 0.18s ease;
+  box-shadow: 0 4px 12px rgba(23, 54, 93, 0.25);
+}
+
+.btn-download-pdf:hover {
+  background: #0f2440;
+  border-color: #0f2440;
+  transform: translateY(-1px);
+}
+
+.btn-cancel {
+  padding: 9px 16px;
+  border-radius: 8px;
+  background: #FFFFFF;
+  border: 1.5px solid #DCE6F2;
+  color: #475569;
+  font-size: 0.82rem;
+  font-weight: 750;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-cancel:hover {
+  background: #e2e8f0;
+  color: #1e293b;
+}
+
+/* --------------------------------------------------------------------------
+   Native Print / PDF Output Styling
+   -------------------------------------------------------------------------- */
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  .modal-backdrop {
+    background: transparent !important;
+    position: static !important;
+    padding: 0 !important;
+  }
+  .score-report-dialog {
+    box-shadow: none !important;
+    border: none !important;
+    width: 100% !important;
+    max-height: none !important;
+  }
+  #printable-score-area,
+  #printable-score-area * {
+    visibility: visible;
+  }
+  #printable-score-area {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    padding: 10mm;
+    background: #FFFFFF !important;
+  }
+  .no-print {
+    display: none !important;
+  }
+  .score-table {
+    font-size: 9pt !important;
+  }
+  .score-table th,
+  .score-table td {
+    border: 1px solid #333 !important;
+    padding: 6px 8px !important;
+  }
+}
