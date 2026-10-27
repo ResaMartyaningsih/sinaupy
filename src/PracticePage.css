@@ -375,6 +375,129 @@
 }
 
 /* --------------------------------------------------------------------------
+   Practice Bonus Points Styling
+   -------------------------------------------------------------------------- */
+.practice-bonus-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 750;
+  background: #fef3c7;
+  color: #b45309;
+  border: 1.5px solid #fde68a;
+  letter-spacing: 0.02em;
+  transition: all 0.2s ease;
+}
+
+.practice-bonus-pill.claimed {
+  background: #dcfce7;
+  color: #15803d;
+  border-color: #bbf7d0;
+}
+
+.practice-bonus-footer {
+  margin-top: 18px;
+  padding: 16px 20px;
+  background: #f8fafc;
+  border: 1.5px solid #DCE6F2;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.bonus-status-info {
+  flex: 1;
+  min-width: 260px;
+}
+
+.bonus-status-info .run-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.85rem;
+  font-weight: 650;
+  line-height: 1.45;
+}
+
+.bonus-status-info .run-status.neutral {
+  color: #64748b;
+}
+
+.bonus-status-info .run-status.success {
+  color: #15803d;
+}
+
+.bonus-status-info .run-status.error {
+  color: #dc2626;
+}
+
+.bonus-action-buttons {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.btn-claim-bonus {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 18px;
+  border-radius: 8px;
+  background: #16a34a;
+  color: #ffffff;
+  border: 1.5px solid #15803d;
+  font-size: 0.86rem;
+  font-weight: 750;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 6px rgba(22, 163, 74, 0.2);
+}
+
+.btn-claim-bonus:hover:not(:disabled) {
+  background: #15803d;
+  box-shadow: 0 4px 10px rgba(22, 163, 74, 0.3);
+  transform: translateY(-1px);
+}
+
+.btn-claim-bonus:disabled,
+.btn-claim-bonus.disabled {
+  background: #94a3b8;
+  border-color: #64748b;
+  color: #f1f5f9;
+  cursor: not-allowed;
+  box-shadow: none;
+  opacity: 0.65;
+  filter: grayscale(0.6);
+  transform: none;
+}
+
+.bonus-toast-banner {
+  margin-top: 12px;
+  padding: 10px 16px;
+  border-radius: 8px;
+  background: #ecfdf5;
+  border: 1.5px solid #a7f3d0;
+  color: #065f46;
+  font-size: 0.84rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* --------------------------------------------------------------------------
    Responsive Adaptations
    -------------------------------------------------------------------------- */
 @media (max-width: 768px) {
@@ -399,5 +522,15 @@
 
   .practice-filter-bar {
     padding: 10px 12px;
+  }
+
+  .practice-bonus-footer {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .btn-claim-bonus {
+    width: 100%;
+    justify-content: center;
   }
 }

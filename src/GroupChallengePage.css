@@ -1314,6 +1314,38 @@
   flex-wrap: wrap;
 }
 
+.submission-btns .btn-submit-score {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #187447;
+  color: #FFFFFF;
+  border: 1px solid #187447;
+  border-radius: 8px;
+  padding: 10px 20px;
+  font-size: 0.84rem;
+  font-weight: 750;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(24, 116, 71, 0.2);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.submission-btns .btn-submit-score:hover:not(:disabled) {
+  background: #145e39;
+  border-color: #145e39;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(24, 116, 71, 0.3);
+}
+
+.submission-btns .btn-submit-score:disabled,
+.submission-btns .btn-submit-score.disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  filter: grayscale(0.5);
+  box-shadow: none !important;
+  transform: none !important;
+}
+
 @media (max-width: 900px) {
   .group-task-options-grid {
     grid-template-columns: 1fr;

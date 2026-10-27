@@ -438,11 +438,20 @@
   transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.btn-submit-score:hover {
+.btn-submit-score:hover:not(:disabled) {
   background: #145e39;
   border-color: #145e39;
   transform: translateY(-1px);
   box-shadow: 0 6px 16px rgba(24, 116, 71, 0.3);
+}
+
+.btn-submit-score:disabled,
+.btn-submit-score.disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  filter: grayscale(0.5);
+  box-shadow: none !important;
+  transform: none !important;
 }
 
 /* ==========================================================================

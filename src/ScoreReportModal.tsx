@@ -29,7 +29,7 @@ type ScoreReportModalProps = {
   onOpenProfile: () => void
 }
 
-type ActivityFilter = 'all' | 'individu' | 'kelompok' | 'hots'
+type ActivityFilter = 'all' | 'individu' | 'kelompok' | 'hots' | 'praktik'
 
 export default function ScoreReportModal({
   isOpen,
@@ -114,18 +114,28 @@ export default function ScoreReportModal({
   const individuScores = scores.filter((s) => s.category === 'individu')
   const kelompokScores = scores.filter((s) => s.category === 'kelompok')
   const hotsScores = scores.filter((s) => s.category === 'hots')
+  const praktikScores = scores.filter((s) => s.category === 'praktik')
+  const bonusPointsTotal = praktikScores.reduce((sum, s) => sum + s.score, 0)
 
   const displayedScores =
     activeFilter === 'all'
       ? scores
       : scores.filter((s) => s.category === activeFilter)
 
-  const totalPossible = scores.reduce((sum, s) => sum + s.maxScore, 0)
+  // Modul praktik adalah bonus poin: pembagi nilai pokok (totalPossible) hanya menghitung tantangan wajib
+  // sehingga jika praktik tidak dikerjakan, sama sekali tidak mengurangi persentase nilai siswa.
+  const requiredScores = scores.filter((s) => s.category !== 'praktik')
+  const totalPossible = requiredScores.reduce((sum, s) => sum + s.maxScore, 0)
   const percentage = totalPossible > 0 ? Math.round((totalScore / totalPossible) * 100) : 0
-  let predikat = 'Perlu Peningkatan'
-  if (percentage >= 85) predikat = 'Sangat Baik (A)'
-  else if (percentage >= 75) predikat = 'Baik / Tuntas KKM (B)'
-  else if (percentage >= 60) predikat = 'Cukup (C)'
+  let predikat = 'Belum Ada Nilai'
+  if (totalPossible > 0) {
+    if (percentage >= 85) predikat = 'Sangat Baik (A)'
+    else if (percentage >= 75) predikat = 'Baik / Tuntas KKM (B)'
+    else if (percentage >= 60) predikat = 'Cukup (C)'
+    else predikat = 'Perlu Peningkatan'
+  } else if (totalScore > 0) {
+    predikat = 'Bonus Terkumpul'
+  }
 
   const currentDate = new Date().toLocaleDateString('id-ID', {
     day: 'numeric',
@@ -154,7 +164,7 @@ export default function ScoreReportModal({
     rows.push(`"Kelas / Rombel","${studentClass.replace(/"/g, '""')}"`)
     rows.push(`"Nama Kelompok","${groupName.replace(/"/g, '""')}"`)
     rows.push(`"Anggota Kelompok","${groupMembers.replace(/"/g, '""')}"`)
-    rows.push(`"Total Nilai","${totalScore} Poin"`)
+    rows.push(`"Total Nilai","${totalScore} Poin${bonusPointsTotal > 0 ? ` (Termasuk +${bonusPointsTotal} Poin Bonus Praktik)` : ''}"`)
     rows.push(`"Predikat Capaian","${predikat}"`)
     rows.push(`"Tanggal Unduh","${currentDate}"`)
     rows.push(`"Status Database","${cloudUserEmail ? `Cloud Supabase (${cloudUserEmail})` : 'Penyimpanan Lokal Peramban'}"`)
@@ -182,7 +192,9 @@ export default function ScoreReportModal({
           ? 'Tantangan Berjenjang'
           : item.category === 'kelompok'
           ? 'Tantangan Kelompok'
-          : 'Studi Kasus HOTS'
+          : item.category === 'hots'
+          ? 'Studi Kasus HOTS'
+          : 'Bonus Praktik Mandiri'
       const pct = item.maxScore > 0 ? `${Math.round((item.score / item.maxScore) * 100)}%` : '0%'
 
       rows.push(
@@ -224,7 +236,7 @@ export default function ScoreReportModal({
         <td style="text-align: center; border: 1px solid #333; padding: 6px;">${idx + 1}</td>
         <td style="border: 1px solid #333; padding: 6px;"><strong>${item.title}</strong></td>
         <td style="text-align: center; border: 1px solid #333; padding: 6px;">
-          ${item.category === 'individu' ? 'Tantangan Berjenjang' : item.category === 'kelompok' ? 'Tantangan Kelompok' : 'Studi Kasus HOTS'}
+          ${item.category === 'individu' ? 'Tantangan Berjenjang' : item.category === 'kelompok' ? 'Tantangan Kelompok' : item.category === 'hots' ? 'Studi Kasus HOTS' : 'Bonus Praktik Mandiri'}
         </td>
         <td style="text-align: center; border: 1px solid #333; padding: 6px;">Level ${item.level}</td>
         <td style="text-align: center; border: 1px solid #333; padding: 6px; font-weight: bold;">${item.score} / ${item.maxScore}</td>
@@ -373,7 +385,7 @@ export default function ScoreReportModal({
         <td>${studentClass}</td>
         <td><strong>Total Skor</strong></td>
         <td>:</td>
-        <td><strong>${totalScore} Poin</strong></td>
+        <td><strong>${totalScore} Poin${bonusPointsTotal > 0 ? ` (+${bonusPointsTotal} Bonus)` : ''}</strong></td>
       </tr>
       <tr>
         <td><strong>Nama Kelompok</strong></td>
@@ -392,25 +404,30 @@ export default function ScoreReportModal({
 
     <table class="rekap-grid">
       <tr>
-        <td style="width: 25%;">
-          <div style="font-size: 8.5pt; color: #555;">TOTAL TUGAS SELESAI</div>
+        <td style="width: 20%;">
+          <div style="font-size: 8.5pt; color: #555;">TOTAL SELESAI</div>
           <div style="font-size: 14pt; font-weight: bold; margin: 3px 0;">${scores.length} Tugas</div>
           <div style="font-size: 8pt; color: #666;">Terkumpul</div>
         </td>
-        <td style="width: 25%;">
-          <div style="font-size: 8.5pt; color: #555;">TANTANGAN BERJENJANG</div>
+        <td style="width: 20%;">
+          <div style="font-size: 8.5pt; color: #555;">BERJENJANG</div>
           <div style="font-size: 14pt; font-weight: bold; margin: 3px 0;">${individuScores.length} Misi</div>
           <div style="font-size: 8pt; color: #666;">Level 1 - 4 Mandiri</div>
         </td>
-        <td style="width: 25%;">
-          <div style="font-size: 8.5pt; color: #555;">TANTANGAN KELOMPOK</div>
+        <td style="width: 20%;">
+          <div style="font-size: 8.5pt; color: #555;">KELOMPOK</div>
           <div style="font-size: 14pt; font-weight: bold; margin: 3px 0;">${kelompokScores.length} Proyek</div>
           <div style="font-size: 8pt; color: #666;">Kolaboratif Tim</div>
         </td>
-        <td style="width: 25%;">
-          <div style="font-size: 8.5pt; color: #555;">STUDI KASUS HOTS</div>
+        <td style="width: 20%;">
+          <div style="font-size: 8.5pt; color: #555;">KASUS HOTS</div>
           <div style="font-size: 14pt; font-weight: bold; margin: 3px 0;">${hotsScores.length} Kasus</div>
           <div style="font-size: 8pt; color: #666;">Analisis C4 - C6</div>
+        </td>
+        <td style="width: 20%;">
+          <div style="font-size: 8.5pt; color: #555;">BONUS PRAKTIK</div>
+          <div style="font-size: 14pt; font-weight: bold; margin: 3px 0; color: #16a34a;">+${bonusPointsTotal} Pts</div>
+          <div style="font-size: 8pt; color: #666;">${praktikScores.length} Modul Terklaim</div>
         </td>
       </tr>
     </table>
@@ -628,6 +645,11 @@ export default function ScoreReportModal({
               <div className="summary-value">{hotsScores.length}</div>
               <span className="summary-sub">Analisis C4 - C6</span>
             </div>
+            <div className="summary-card bonus-card">
+              <span className="summary-label">BONUS PRAKTIK</span>
+              <div className="summary-value text-bonus">+{bonusPointsTotal}</div>
+              <span className="summary-sub">{praktikScores.length} Modul Terklaim</span>
+            </div>
           </div>
 
           {/* Activity Filter Strip (no-print) */}
@@ -661,6 +683,13 @@ export default function ScoreReportModal({
                 onClick={() => setActiveFilter('hots')}
               >
                 Studi Kasus HOTS ({hotsScores.length})
+              </button>
+              <button
+                type="button"
+                className={`filter-pill ${activeFilter === 'praktik' ? 'active' : ''}`}
+                onClick={() => setActiveFilter('praktik')}
+              >
+                Bonus Praktik ({praktikScores.length})
               </button>
             </div>
           </div>
@@ -711,7 +740,9 @@ export default function ScoreReportModal({
                             ? 'Tantangan Berjenjang'
                             : item.category === 'kelompok'
                             ? 'Tantangan Kelompok'
-                            : 'Studi Kasus HOTS'}
+                            : item.category === 'hots'
+                            ? 'Studi Kasus HOTS'
+                            : 'Bonus Praktik Mandiri'}
                         </span>
                       </td>
                       <td className="col-center">Level {item.level}</td>

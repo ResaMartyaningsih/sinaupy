@@ -14,7 +14,7 @@ CREATE TABLE IF NOT EXISTS public.student_scores (
     group_name TEXT,
     activity_id TEXT NOT NULL,
     activity_name TEXT NOT NULL,
-    activity_type TEXT NOT NULL CHECK (activity_type IN ('individu', 'kelompok', 'hots')),
+    activity_type TEXT NOT NULL CHECK (activity_type IN ('individu', 'kelompok', 'hots', 'praktik')),
     level INTEGER NOT NULL DEFAULT 1,
     score NUMERIC NOT NULL DEFAULT 0,
     max_score NUMERIC NOT NULL DEFAULT 100,

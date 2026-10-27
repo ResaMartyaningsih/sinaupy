@@ -24,7 +24,7 @@ export interface GroupData {
 export interface ChallengeScore {
   challengeId: string
   title: string
-  category: 'individu' | 'kelompok' | 'hots'
+  category: 'individu' | 'kelompok' | 'hots' | 'praktik'
   level: number
   score: number
   maxScore: number

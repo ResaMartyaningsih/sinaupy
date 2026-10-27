@@ -19,6 +19,8 @@ type CodePlaygroundProps = {
   initialCode?: string
   initialInput?: string
   onRun?: (code: string, output: string, success: boolean) => void
+  onRunStart?: () => void
+  onChange?: (code: string) => void
 }
 
 export default function CodePlayground({
@@ -27,6 +29,8 @@ export default function CodePlayground({
   hints = [],
   initialCode = '',
   onRun,
+  onRunStart,
+  onChange,
 }: CodePlaygroundProps) {
   const [code, setCode] = useState(initialCode)
   const [terminalChunks, setTerminalChunks] = useState<TerminalChunk[]>([])
@@ -41,6 +45,7 @@ export default function CodePlayground({
   const pendingInputResolverRef = useRef<((val: string) => void) | null>(null)
   const stopRequestedRef = useRef(false)
   const fullOutputRef = useRef('')
+  const hasErrorRef = useRef(false)
 
   useEffect(() => {
     setCode(initialCode)
@@ -147,10 +152,14 @@ export default function CodePlayground({
     if (status === 'running' || status === 'waiting_input') return
 
     stopRequestedRef.current = false
+    hasErrorRef.current = false
     setStatus('loading')
     setIsWaitingForInput(false)
     setCurrentInputValue('')
     fullOutputRef.current = ''
+    if (onRunStart) {
+      onRunStart()
+    }
 
     setTerminalChunks([
       {
@@ -163,7 +172,8 @@ export default function CodePlayground({
     window.sinaupyWriteTerminal = (text: string, isStderr: boolean) => {
       fullOutputRef.current += text
       appendTerminal(text, isStderr ? 'stderr' : 'stdout')
-      if (isStderr && text.includes('Error')) {
+      if (isStderr && (text.includes('Error') || text.includes('Traceback') || text.includes('Exception'))) {
+        hasErrorRef.current = true
         setStatus('error')
       }
     }
@@ -200,7 +210,10 @@ export default function CodePlayground({
       await pyodide.runPythonAsync('await _sinaupy_run_user_code(_user_code_raw)')
 
       if (!stopRequestedRef.current) {
-        const hasErr = fullOutputRef.current.includes('Error:') || status === 'error'
+        const hasErr =
+          hasErrorRef.current ||
+          fullOutputRef.current.includes('Error:') ||
+          fullOutputRef.current.includes('Traceback (most recent call last):')
         setStatus(hasErr ? 'error' : 'finished')
         appendTerminal('\n=== Program Selesai Dieksekusi ===\n', 'system')
         if (onRun) {
@@ -209,6 +222,7 @@ export default function CodePlayground({
       }
     } catch (runErr) {
       if (!stopRequestedRef.current) {
+        hasErrorRef.current = true
         setStatus('error')
         const msg = runErr instanceof Error ? runErr.message : String(runErr)
         appendTerminal(`\n[Kesalahan Sistem Pyodide]: ${msg}\n`, 'stderr')
@@ -342,7 +356,10 @@ export default function CodePlayground({
         <div className="playground-editor-pane">
           <PythonCodeEditor
             value={code}
-            onChange={setCode}
+            onChange={(newCode) => {
+              setCode(newCode)
+              if (onChange) onChange(newCode)
+            }}
             placeholder="# Ketik kode program Python di sini..."
             minHeight="220px"
             onPasteBlock={triggerPasteWarning}

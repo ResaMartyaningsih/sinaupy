@@ -100,7 +100,7 @@ export default function ChallengeRunner({
   }
 
   const handleRunResult = (_code: string, output: string, success: boolean) => {
-    const isError = !success || output.includes('Error:') || output.includes('EOFError')
+    const isError = !success || output.includes('Error:') || output.includes('Traceback') || output.includes('EOFError')
     setLastRunSuccess(!isError)
     if (isError) {
       setSaveSuccessMsg(null)
@@ -111,6 +111,10 @@ export default function ChallengeRunner({
 
   const handleSaveScore = async () => {
     if (isSavingScore) return
+    if (lastRunSuccess !== true) {
+      alert('Nilai belum dapat disimpan. Pastikan kamu telah menjalankan program di compiler dan berhasil tanpa pesan error.')
+      return
+    }
     const profile = getStudentProfile()
     if (!profile.name.trim() || !profile.className.trim()) {
       alert('Silakan lengkapi Nama Siswa dan Kelas terlebih dahulu agar nilai dapat dicatat.')
@@ -353,6 +357,16 @@ export default function ChallengeRunner({
           initialCode={challenge.initialCode}
           initialInput={challenge.testCases[0]?.input || ''}
           onRun={handleRunResult}
+          onRunStart={() => {
+            setLastRunSuccess(null)
+            setSaveSuccessMsg(null)
+          }}
+          onChange={() => {
+            if (lastRunSuccess === false) {
+              setLastRunSuccess(null)
+            }
+            setSaveSuccessMsg(null)
+          }}
         />
       </div>
 
@@ -393,11 +407,11 @@ export default function ChallengeRunner({
               </span>
             ) : lastRunSuccess === false ? (
               <span className="run-status error">
-                <IconAlert /> Program mengalami error atau belum menghasilkan output yang valid. Periksa terminal di atas.
+                <IconAlert /> Terdapat kesalahan (error) pada eksekusi program. Silakan periksa terminal, perbaiki kode, dan jalankan ulang untuk mengaktifkan tombol Simpan Nilai.
               </span>
             ) : (
               <span className="run-status neutral">
-                Jalankan program di compiler hingga sukses, lalu simpan skor asesmen di sini.
+                Jalankan kode program di compiler hingga sukses tanpa error untuk mengaktifkan tombol Simpan Nilai.
               </span>
             )}
           </div>
@@ -405,11 +419,23 @@ export default function ChallengeRunner({
           <div className="submit-buttons-right">
             <button
               type="button"
-              className="btn-submit-score"
+              className={`btn-submit-score ${lastRunSuccess !== true ? 'disabled' : ''}`}
               onClick={handleSaveScore}
+              disabled={lastRunSuccess !== true || isSavingScore}
+              title={
+                lastRunSuccess !== true
+                  ? 'Jalankan program hingga berhasil tanpa error terlebih dahulu agar tombol Simpan Nilai aktif'
+                  : 'Simpan nilai ke portofolio asesmen'
+              }
             >
               <IconSave />
-              <span>{savedScore ? 'Perbarui Nilai' : `Simpan Nilai (+${challenge.points} Poin)`}</span>
+              <span>
+                {isSavingScore
+                  ? 'Menyimpan...'
+                  : savedScore
+                  ? 'Perbarui Nilai'
+                  : `Simpan Nilai (+${challenge.points} Poin)`}
+              </span>
             </button>
           </div>
         </div>

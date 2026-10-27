@@ -300,7 +300,7 @@ export default function GroupChallengePage({
 
   // Handle Receipt Code Run
   const handleReceiptRun = (_code: string, output: string, success: boolean) => {
-    const isError = !success || output.includes('Error:') || output.includes('EOFError')
+    const isError = !success || output.includes('Error:') || output.includes('Traceback') || output.includes('EOFError')
     setReceiptLastSuccess(!isError)
     if (isError) {
       setReceiptSaveMsg(null)
@@ -309,6 +309,11 @@ export default function GroupChallengePage({
 
   // Handle Save Score for Proyek Kelompok Struk
   const handleSaveReceiptScore = async () => {
+    if (receiptLastSuccess !== true) {
+      alert('Nilai proyek belum dapat disimpan. Pastikan program kasir telah dijalankan di compiler dan berhasil tanpa pesan error.')
+      return
+    }
+
     const curProfile = getStudentProfile()
     if (!curProfile.name.trim() || !curProfile.className.trim()) {
       alert('Silakan lengkapi Nama Siswa dan Kelas terlebih dahulu agar nilai dapat dicatat.')
@@ -898,6 +903,16 @@ export default function GroupChallengePage({
                 ]}
                 initialCode={activeTheme.initialCode}
                 onRun={handleReceiptRun}
+                onRunStart={() => {
+                  setReceiptLastSuccess(null)
+                  setReceiptSaveMsg(null)
+                }}
+                onChange={() => {
+                  if (receiptLastSuccess === false) {
+                    setReceiptLastSuccess(null)
+                  }
+                  setReceiptSaveMsg(null)
+                }}
               />
 
               {/* SINTAKS 6: EVALUASI & REFLEKSI PEMBELAJARAN PROYEK */}
@@ -948,11 +963,11 @@ export default function GroupChallengePage({
                       </span>
                     ) : receiptLastSuccess === false ? (
                       <span className="run-status error">
-                        <IconAlert /> Program mengalami error atau belum selesai dieksekusi. Periksa terminal di atas.
+                        <IconAlert /> Terdapat kesalahan (error) pada program struk. Silakan periksa terminal, perbaiki kode, dan jalankan ulang untuk mengaktifkan tombol Simpan Nilai.
                       </span>
                     ) : (
                       <span className="run-status neutral">
-                        Uji program kasir di editor, lalu simpan nilai asesmen kelompokmu di sini.
+                        Uji program kasir di editor hingga berhasil tanpa error untuk mengaktifkan tombol Simpan Nilai.
                       </span>
                     )}
                   </div>
@@ -960,8 +975,14 @@ export default function GroupChallengePage({
                   <div className="submission-btns">
                     <button
                       type="button"
-                      className="btn-submit-score"
+                      className={`btn-submit-score ${receiptLastSuccess !== true ? 'disabled' : ''}`}
                       onClick={handleSaveReceiptScore}
+                      disabled={receiptLastSuccess !== true}
+                      title={
+                        receiptLastSuccess !== true
+                          ? 'Jalankan program hingga berhasil tanpa error terlebih dahulu agar tombol Simpan Nilai aktif'
+                          : 'Simpan nilai proyek kelompok'
+                      }
                     >
                       <IconSave />
                       <span>{receiptScoreSaved ? 'Perbarui Nilai Proyek' : 'Simpan Nilai Proyek (+100 Poin)'}</span>

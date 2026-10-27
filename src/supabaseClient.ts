@@ -9,7 +9,7 @@ export interface DbStudentScore {
   group_name?: string | null
   activity_id: string
   activity_name: string
-  activity_type: 'individu' | 'kelompok' | 'hots'
+  activity_type: 'individu' | 'kelompok' | 'hots' | 'praktik'
   level: number
   score: number
   max_score: number
