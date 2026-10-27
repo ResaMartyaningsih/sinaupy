@@ -21,7 +21,8 @@ import {
 import './CompilerPage.css'
 
 type CompilerPageProps = {
-  onBackHome: () => void
+  onBack?: () => void
+  onBackHome?: () => void
 }
 
 const CODE_TEMPLATES = [
@@ -129,7 +130,12 @@ print(f"Total yang harus dibayar: Rp{bayar:,.0f}")
 
 const COMPILER_STORAGE_KEY = 'sinaupy_compiler_draft'
 
-export default function CompilerPage({ onBackHome }: CompilerPageProps) {
+export default function CompilerPage({ onBack, onBackHome }: CompilerPageProps) {
+  const handleBack = () => {
+    if (onBack) onBack()
+    else if (onBackHome) onBackHome()
+    else window.history.back()
+  }
   const [code, setCode] = useState(() => {
     try {
       const saved =
@@ -373,13 +379,14 @@ export default function CompilerPage({ onBackHome }: CompilerPageProps) {
       <div className="compiler-top-bar">
         <a
           className="back-home-link"
-          href="#beranda"
+          href="#kembali"
           onClick={(e) => {
             e.preventDefault()
-            onBackHome()
+            handleBack()
           }}
+          title="Kembali ke halaman sebelumnya"
         >
-          <IconArrowLeft /> Kembali ke Beranda
+          <IconArrowLeft /> Kembali
         </a>
 
         <div className="compiler-meta-badges">

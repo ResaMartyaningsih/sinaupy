@@ -1,5 +1,11 @@
 import { useState, useEffect } from 'react'
-import { getStudentProfile, saveStudentProfile, type StudentProfile } from './studentData'
+import {
+  getStudentProfile,
+  saveStudentProfile,
+  clearStudentProfile,
+  type StudentProfile,
+} from './studentData'
+import { signOutStudent, isSupabaseConfigured } from './supabaseClient'
 import { IconClose, IconSave, IconArrowRight, IconAlert } from './Icons'
 import './StudentProfileModal.css'
 
@@ -18,6 +24,7 @@ export default function StudentProfileModal({
   onSave,
   isOnboarding = false,
 }: StudentProfileModalProps) {
+  const [profile, setProfile] = useState<StudentProfile>(getStudentProfile)
   const [name, setName] = useState('')
   const [className, setClassName] = useState('')
   const [groupName, setGroupName] = useState('')
@@ -27,6 +34,7 @@ export default function StudentProfileModal({
   useEffect(() => {
     if (isOpen) {
       const current = getStudentProfile()
+      setProfile(current)
       setName(current.name || '')
       setClassName(current.className || '')
       setGroupName(current.groupName || '')
@@ -61,6 +69,7 @@ export default function StudentProfileModal({
     }
 
     const updated: StudentProfile = {
+      ...profile,
       name: name.trim(),
       className: className.trim(),
       groupName: groupName.trim(),
@@ -69,6 +78,16 @@ export default function StudentProfileModal({
     saveStudentProfile(updated)
     if (onSave) onSave(updated)
     onClose()
+  }
+
+  const handleSignOut = async () => {
+    if (confirm('Apakah kamu yakin ingin keluar dari sesi akun siswa ini?')) {
+      if (isSupabaseConfigured() && profile.isCloudAccount) {
+        await signOutStudent()
+      }
+      clearStudentProfile()
+      window.location.reload()
+    }
   }
 
   return (
@@ -94,11 +113,25 @@ export default function StudentProfileModal({
           </button>
         </div>
 
+        {/* Account Status Strip */}
+        <div className="account-status-bar">
+          <div className="account-status-left">
+            <span className={`status-dot ${profile.isCloudAccount ? 'cloud' : 'local'}`} />
+            <div>
+              <span className="account-type-title">
+                {profile.isCloudAccount ? 'Akun Siswa Cloud' : 'Akun Tamu (Penyimpanan Lokal)'}
+              </span>
+              {profile.email && <div className="account-email">{profile.email}</div>}
+            </div>
+          </div>
+          <button type="button" className="btn-logout-account" onClick={handleSignOut} title="Keluar dari sesi ini">
+            Ganti / Keluar Akun
+          </button>
+        </div>
+
         <form onSubmit={handleSubmit} className="modal-form">
           <p className="modal-description">
-            {isOnboarding
-              ? 'Selamat datang di SinauPy! Silakan lengkapi nama dan kelas Anda untuk memulai materi pembelajaran. Data disimpan lokal di peramban untuk mencatat progres dan hasil asesmen tanpa perlu login/kata sandi.'
-              : 'Data diri disimpan secara lokal di peramban ini untuk mencatat hasil asesmen dan pencetakan lembar nilai. Tidak memerlukan kata sandi atau akun masuk.'}
+            Data diri digunakan untuk mencetak lembar nilai, sertifikat tugas, serta merekap capaian belajar.
           </p>
 
           {errorMessage && (
@@ -208,4 +241,3 @@ export default function StudentProfileModal({
     </div>
   )
 }
-

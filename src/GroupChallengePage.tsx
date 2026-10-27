@@ -27,7 +27,8 @@ import {
 import './GroupChallengePage.css'
 
 type GroupChallengePageProps = {
-  onBackHome: () => void
+  onBack?: () => void
+  onBackHome?: () => void
   onOpenProfile?: () => void
   onStartChallenges?: () => void
   onOpenScores?: () => void
@@ -130,11 +131,17 @@ KEMBALIAN                 : Rp 12.000
 ]
 
 export default function GroupChallengePage({
+  onBack,
   onBackHome,
   onOpenProfile,
   onStartChallenges,
   onOpenScores,
 }: GroupChallengePageProps) {
+  const handleBack = () => {
+    if (onBack) onBack()
+    else if (onBackHome) onBackHome()
+    else window.history.back()
+  }
   const profile = getStudentProfile()
   const activeStudent = profile.name && profile.name.trim() ? profile.name.trim() : 'Siswa'
 
@@ -301,7 +308,7 @@ export default function GroupChallengePage({
   }
 
   // Handle Save Score for Proyek Kelompok Struk
-  const handleSaveReceiptScore = () => {
+  const handleSaveReceiptScore = async () => {
     const curProfile = getStudentProfile()
     if (!curProfile.name.trim() || !curProfile.className.trim()) {
       alert('Silakan lengkapi Nama Siswa dan Kelas terlebih dahulu agar nilai dapat dicatat.')
@@ -309,7 +316,7 @@ export default function GroupChallengePage({
       return
     }
 
-    saveChallengeScore({
+    const result = await saveChallengeScore({
       challengeId: 'proyek-kelompok-struk',
       title: 'Proyek Kelompok: Program Struk Pembelian',
       category: 'kelompok',
@@ -319,10 +326,10 @@ export default function GroupChallengePage({
     })
 
     setReceiptScoreSaved(true)
-    setReceiptSaveMsg(`Nilai 100 poin Proyek Kelompok berhasil disimpan untuk ${curProfile.name}.`)
+    setReceiptSaveMsg(result.message)
     setTimeout(() => {
       setReceiptSaveMsg(null)
-    }, 4500)
+    }, 5000)
   }
 
   const filteredMissions =
@@ -337,10 +344,11 @@ export default function GroupChallengePage({
         <button
           type="button"
           className="back-btn"
-          onClick={onBackHome}
-          aria-label="Kembali ke Beranda"
+          onClick={handleBack}
+          aria-label="Kembali"
+          title="Kembali ke halaman sebelumnya"
         >
-          <IconArrowLeft /> Kembali ke Beranda
+          <IconArrowLeft /> Kembali
         </button>
 
         <div className="group-top-right-actions">

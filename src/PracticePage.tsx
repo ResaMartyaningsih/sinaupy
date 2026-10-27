@@ -10,7 +10,8 @@ import {
 import './PracticePage.css'
 
 type PracticePageProps = {
-  onBackHome: () => void
+  onBack?: () => void
+  onBackHome?: () => void
 }
 
 const exercises = [
@@ -68,8 +69,14 @@ const exercises = [
   },
 ]
 
-export default function PracticePage({ onBackHome }: PracticePageProps) {
+export default function PracticePage({ onBack, onBackHome }: PracticePageProps) {
   const [activeFilter, setActiveFilter] = useState<number | 'all'>('all')
+
+  const handleBack = () => {
+    if (onBack) onBack()
+    else if (onBackHome) onBackHome()
+    else window.history.back()
+  }
 
   const displayedExercises =
     activeFilter === 'all'
@@ -82,13 +89,14 @@ export default function PracticePage({ onBackHome }: PracticePageProps) {
       <div className="practice-top-bar">
         <a
           className="back-home-link"
-          href="#beranda"
+          href="#kembali"
           onClick={(event) => {
             event.preventDefault()
-            onBackHome()
+            handleBack()
           }}
+          title="Kembali ke halaman sebelumnya"
         >
-          <IconArrowLeft /> Kembali ke Beranda
+          <IconArrowLeft /> Kembali
         </a>
 
         <div className="practice-status-badge">

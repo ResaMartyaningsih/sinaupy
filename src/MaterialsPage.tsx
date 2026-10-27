@@ -13,7 +13,8 @@ import {
 import './MaterialsPage.css'
 
 type MaterialsPageProps = {
-  onBackHome: () => void
+  onBack?: () => void
+  onBackHome?: () => void
 }
 
 interface FlatTopic {
@@ -24,7 +25,12 @@ interface FlatTopic {
   globalNumber: number
 }
 
-export default function MaterialsPage({ onBackHome }: MaterialsPageProps) {
+export default function MaterialsPage({ onBack, onBackHome }: MaterialsPageProps) {
+  const handleBack = () => {
+    if (onBack) onBack()
+    else if (onBackHome) onBackHome()
+    else window.history.back()
+  }
   const [selectedTopic, setSelectedTopic] = useState<{
     categoryIndex: number
     topicIndex: number
@@ -94,13 +100,14 @@ export default function MaterialsPage({ onBackHome }: MaterialsPageProps) {
       <div className="materials-top-bar">
         <a
           className="back-home-link"
-          href="#beranda"
+          href="#kembali"
           onClick={(event) => {
             event.preventDefault()
-            onBackHome()
+            handleBack()
           }}
+          title="Kembali ke halaman sebelumnya"
         >
-          <IconArrowLeft /> Kembali ke Beranda
+          <IconArrowLeft /> Kembali
         </a>
 
         {/* Mobile Sidebar Toggle Button */}

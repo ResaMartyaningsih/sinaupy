@@ -3,7 +3,8 @@ import './LearningPage.css'
 
 type LearningPageProps = {
   onShowMaterials: () => void
-  onBackHome: () => void
+  onBack?: () => void
+  onBackHome?: () => void
 }
 
 const learningSteps = [
@@ -16,19 +17,26 @@ const learningSteps = [
   'Fungsi Modular (def)',
 ]
 
-export default function LearningPage({ onShowMaterials, onBackHome }: LearningPageProps) {
+export default function LearningPage({ onShowMaterials, onBack, onBackHome }: LearningPageProps) {
+  const handleBack = () => {
+    if (onBack) onBack()
+    else if (onBackHome) onBackHome()
+    else window.history.back()
+  }
+
   return (
     <section className="learning-page" aria-labelledby="learning-title">
       <div className="learning-top-bar">
         <a
           className="back-home-link"
-          href="#beranda"
+          href="#kembali"
           onClick={(event) => {
             event.preventDefault()
-            onBackHome()
+            handleBack()
           }}
+          title="Kembali ke halaman sebelumnya"
         >
-          <IconArrowLeft /> Kembali ke Beranda
+          <IconArrowLeft /> Kembali
         </a>
       </div>
 

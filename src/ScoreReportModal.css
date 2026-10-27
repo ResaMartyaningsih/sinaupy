@@ -218,6 +218,145 @@
 }
 
 /* --------------------------------------------------------------------------
+   Cloud Database Status & Sync Bar
+   -------------------------------------------------------------------------- */
+.cloud-sync-status-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  background: #F8FAFD;
+  border: 1.5px solid #DCE6F2;
+  border-radius: 10px;
+  padding: 10px 16px;
+  margin-bottom: 18px;
+  flex-wrap: wrap;
+}
+
+.cloud-status-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.82rem;
+  color: #334E68;
+}
+
+.cloud-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+.cloud-dot.online {
+  background: #187447;
+  box-shadow: 0 0 0 3px rgba(24, 116, 71, 0.2);
+}
+
+.cloud-dot.local {
+  background: #F4B544;
+  box-shadow: 0 0 0 3px rgba(244, 181, 68, 0.2);
+}
+
+.btn-sync-cloud {
+  background: #FFFFFF;
+  border: 1.5px solid #DCE6F2;
+  border-radius: 6px;
+  padding: 5px 12px;
+  font-size: 0.74rem;
+  font-weight: 800;
+  color: #17365D;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-sync-cloud:hover:not(:disabled) {
+  background: #EEF3FA;
+  border-color: #315D9B;
+}
+
+.btn-sync-cloud:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.sync-toast-alert {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  background: #F0FDF4;
+  border: 1.5px solid #86EFAC;
+  border-radius: 8px;
+  color: #166534;
+  font-size: 0.8rem;
+  font-weight: 750;
+  margin-bottom: 14px;
+}
+
+/* --------------------------------------------------------------------------
+   Activity Filter Bar
+   -------------------------------------------------------------------------- */
+.score-filter-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.filter-label {
+  font-size: 0.76rem;
+  font-weight: 850;
+  color: #64748B;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.filter-pills-group {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.filter-pill {
+  background: #FFFFFF;
+  border: 1.5px solid #DCE6F2;
+  border-radius: 20px;
+  padding: 5px 12px;
+  font-size: 0.75rem;
+  font-weight: 750;
+  color: #475569;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.filter-pill:hover {
+  border-color: #315D9B;
+  color: #17365D;
+}
+
+.filter-pill.active {
+  background: #17365D;
+  border-color: #17365D;
+  color: #FFFFFF;
+}
+
+.status-pill-error {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.72rem;
+  font-weight: 800;
+  color: #b91c1c;
+  background: #fef2f2;
+  border: 1px solid #fca5a5;
+  padding: 2px 8px;
+  border-radius: 999px;
+}
+
+/* --------------------------------------------------------------------------
    Tasks & Score Table
    -------------------------------------------------------------------------- */
 .score-table-wrap {
@@ -456,6 +595,28 @@
 
 .btn-reset:hover {
   background: #fee2e2;
+}
+
+.btn-download-csv {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 9px 16px;
+  border-radius: 8px;
+  background: #187447;
+  border: 1.5px solid #187447;
+  color: #FFFFFF;
+  font-weight: 800;
+  font-size: 0.82rem;
+  cursor: pointer;
+  transition: all 0.18s ease;
+  box-shadow: 0 4px 12px rgba(24, 116, 71, 0.25);
+}
+
+.btn-download-csv:hover {
+  background: #145e39;
+  border-color: #145e39;
+  transform: translateY(-1px);
 }
 
 .btn-download-word {

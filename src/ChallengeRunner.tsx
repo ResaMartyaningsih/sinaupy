@@ -107,7 +107,10 @@ export default function ChallengeRunner({
     }
   }
 
-  const handleSaveScore = () => {
+  const [isSavingScore, setIsSavingScore] = useState(false)
+
+  const handleSaveScore = async () => {
+    if (isSavingScore) return
     const profile = getStudentProfile()
     if (!profile.name.trim() || !profile.className.trim()) {
       alert('Silakan lengkapi Nama Siswa dan Kelas terlebih dahulu agar nilai dapat dicatat.')
@@ -115,7 +118,8 @@ export default function ChallengeRunner({
       return
     }
 
-    saveChallengeScore({
+    setIsSavingScore(true)
+    const result = await saveChallengeScore({
       challengeId: challenge.id,
       title: challenge.title,
       category: challenge.category,
@@ -123,11 +127,12 @@ export default function ChallengeRunner({
       score: challenge.points,
       maxScore: challenge.points,
     })
+    setIsSavingScore(false)
 
-    setSaveSuccessMsg(`Nilai ${challenge.points} poin berhasil disimpan untuk ${profile.name}.`)
+    setSaveSuccessMsg(result.message)
     setTimeout(() => {
       setSaveSuccessMsg(null)
-    }, 4500)
+    }, 5000)
   }
 
   // Get pedagogical inquiry level description

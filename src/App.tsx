@@ -65,13 +65,17 @@ function getInitialStage(): AppStage {
 export default function App() {
   const [appStage, setAppStage] = useState<AppStage>(getInitialStage)
   const [page, setPage] = useState<Page>(getPageFromHash)
+  const [pageHistory, setPageHistory] = useState<Page[]>([])
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false)
   const [isScoreModalOpen, setIsScoreModalOpen] = useState(false)
   const [studentProfile, setStudentProfile] = useState<StudentProfile>(getStudentProfile)
   const [scores, setScores] = useState<ChallengeScore[]>(getChallengeScores)
 
-  const navigateTo = (nextPage: Page) => {
+  const navigateTo = (nextPage: Page, isBack: boolean = false) => {
+    if (!isBack && nextPage !== page) {
+      setPageHistory((prev) => [...prev, page])
+    }
     setPage(nextPage)
     setMobileMenuOpen(false)
     if (window.location.hash !== `#${nextPage}`) {
@@ -80,10 +84,29 @@ export default function App() {
     window.scrollTo(0, 0)
   }
 
+  const handleBack = () => {
+    if (pageHistory.length > 0) {
+      const prevPage = pageHistory[pageHistory.length - 1]
+      setPageHistory((prev) => prev.slice(0, -1))
+      navigateTo(prevPage, true)
+    } else {
+      navigateTo('beranda')
+    }
+  }
+
   useEffect(() => {
     const syncPageWithHash = () => {
+      const hash = window.location.hash.toLowerCase()
+      if (hash === '#nilai') {
+        setIsScoreModalOpen(true)
+        return
+      }
       setPage(getPageFromHash())
       window.scrollTo(0, 0)
+    }
+
+    if (window.location.hash.toLowerCase() === '#nilai') {
+      setIsScoreModalOpen(true)
     }
 
     const syncScores = () => setScores(getChallengeScores())
@@ -227,6 +250,16 @@ export default function App() {
               Compiler
             </a>
             <a
+              href="#nilai"
+              className="nav-link"
+              onClick={(e) => {
+                e.preventDefault()
+                setIsScoreModalOpen(true)
+              }}
+            >
+              Nilai Saya
+            </a>
+            <a
               href="#tentang"
               className="nav-link"
               onClick={(e) => {
@@ -261,16 +294,6 @@ export default function App() {
                 <span className="greeting-class">Kelas {studentDisplayClass} • {totalScore} Pts</span>
               </div>
             </button>
-
-            {page === 'beranda' && (
-              <button
-                type="button"
-                className="nav-cta-btn"
-                onClick={() => navigateTo('materi')}
-              >
-                Mulai Belajar <IconArrowUpRight />
-              </button>
-            )}
 
             {/* Mobile Hamburger Toggle */}
             <button
@@ -348,6 +371,17 @@ export default function App() {
               Compiler Bebas
             </a>
             <a
+              href="#nilai"
+              className="mobile-nav-item"
+              onClick={(e) => {
+                e.preventDefault()
+                setMobileMenuOpen(false)
+                setIsScoreModalOpen(true)
+              }}
+            >
+              Nilai Saya
+            </a>
+            <a
               href="#tentang"
               className="mobile-nav-item"
               onClick={(e) => {
@@ -381,28 +415,31 @@ export default function App() {
           ==================================================================== */}
       <main className="main-content">
         {page === 'materi' ? (
-          <MaterialsPage onBackHome={() => navigateTo('beranda')} />
+          <MaterialsPage onBack={handleBack} onBackHome={handleBack} />
         ) : page === 'praktik' ? (
-          <PracticePage onBackHome={() => navigateTo('beranda')} />
+          <PracticePage onBack={handleBack} onBackHome={handleBack} />
         ) : page === 'tantangan-kelompok' ? (
           <GroupChallengePage
-            onBackHome={() => navigateTo('beranda')}
+            onBack={handleBack}
+            onBackHome={handleBack}
             onStartChallenges={() => navigateTo('tantangan')}
             onOpenProfile={() => setIsProfileModalOpen(true)}
             onOpenScores={() => setIsScoreModalOpen(true)}
           />
         ) : page === 'tantangan' ? (
           <ChallengesPage
-            onBackHome={() => navigateTo('beranda')}
+            onBack={handleBack}
+            onBackHome={handleBack}
             onOpenProfile={() => setIsProfileModalOpen(true)}
             onOpenScores={() => setIsScoreModalOpen(true)}
           />
         ) : page === 'compiler' ? (
-          <CompilerPage onBackHome={() => navigateTo('beranda')} />
+          <CompilerPage onBack={handleBack} onBackHome={handleBack} />
         ) : page === 'belajar' ? (
           <LearningPage
             onShowMaterials={() => navigateTo('materi')}
-            onBackHome={() => navigateTo('beranda')}
+            onBack={handleBack}
+            onBackHome={handleBack}
           />
         ) : (
           /* ================================================================
@@ -708,6 +745,7 @@ export default function App() {
               <a href="#tantangan" onClick={(e) => { e.preventDefault(); navigateTo('tantangan'); }}>Tantangan Berjenjang</a>
               <a href="#tantangan-kelompok" onClick={(e) => { e.preventDefault(); navigateTo('tantangan-kelompok'); }}>Tantangan Kelompok</a>
               <a href="#compiler" onClick={(e) => { e.preventDefault(); navigateTo('compiler'); }}>Compiler</a>
+              <a href="#nilai" onClick={(e) => { e.preventDefault(); setIsScoreModalOpen(true); }}>Nilai Saya</a>
               <a href="#tentang" onClick={(e) => {
                 e.preventDefault()
                 if (page !== 'beranda') {

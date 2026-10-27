@@ -5,10 +5,12 @@ import {
   calculateTotalScore,
   resetAllScores,
   getGroupData,
+  syncScoresWithCloud,
   type StudentProfile,
   type ChallengeScore,
   type GroupData,
 } from './studentData'
+import { isSupabaseConfigured, getCurrentAuthUser } from './supabaseClient'
 import {
   IconClose,
   IconPrinter,
@@ -17,6 +19,7 @@ import {
   IconTrophy,
   IconDownload,
   IconCheck,
+  IconAlert,
 } from './Icons'
 import './ScoreReportModal.css'
 
@@ -26,6 +29,8 @@ type ScoreReportModalProps = {
   onOpenProfile: () => void
 }
 
+type ActivityFilter = 'all' | 'individu' | 'kelompok' | 'hots'
+
 export default function ScoreReportModal({
   isOpen,
   onClose,
@@ -34,17 +39,55 @@ export default function ScoreReportModal({
   const [profile, setProfile] = useState<StudentProfile>(getStudentProfile)
   const [groupData, setGroupData] = useState<GroupData>(() => getGroupData(profile.name))
   const [scores, setScores] = useState<ChallengeScore[]>(getChallengeScores)
+  const [activeFilter, setActiveFilter] = useState<ActivityFilter>('all')
+  const [isSyncing, setIsSyncing] = useState<boolean>(false)
+  const [syncStatusMsg, setSyncStatusMsg] = useState<string | null>(null)
+  const [cloudUserEmail, setCloudUserEmail] = useState<string | null>(null)
 
-  const reloadData = () => {
+  const reloadData = async () => {
     const p = getStudentProfile()
     setProfile(p)
     setGroupData(getGroupData(p.name))
     setScores(getChallengeScores())
+
+    if (isSupabaseConfigured()) {
+      const user = await getCurrentAuthUser()
+      setCloudUserEmail(user?.email || null)
+    }
+  }
+
+  const handleSyncCloud = async () => {
+    if (!isSupabaseConfigured()) {
+      setSyncStatusMsg('Database Supabase belum dikonfigurasi di environment.')
+      setTimeout(() => setSyncStatusMsg(null), 4000)
+      return
+    }
+
+    setIsSyncing(true)
+    setSyncStatusMsg('Menyinkronkan data nilai dengan Supabase...')
+    const result = await syncScoresWithCloud()
+    setIsSyncing(false)
+
+    if (result.cloudSynced) {
+      setScores(result.scores)
+      setSyncStatusMsg('Sinkronisasi cloud database berhasil!')
+    } else {
+      setSyncStatusMsg(result.error ? `Sinkronisasi gagal: ${result.error}` : 'Gagal terhubung ke database cloud.')
+    }
+    setTimeout(() => setSyncStatusMsg(null), 4000)
   }
 
   useEffect(() => {
     if (isOpen) {
       reloadData()
+      // Automatically attempt background cloud sync when opened
+      if (isSupabaseConfigured()) {
+        syncScoresWithCloud().then((res) => {
+          if (res.cloudSynced) {
+            setScores(res.scores)
+          }
+        })
+      }
     }
   }, [isOpen])
 
@@ -72,6 +115,11 @@ export default function ScoreReportModal({
   const kelompokScores = scores.filter((s) => s.category === 'kelompok')
   const hotsScores = scores.filter((s) => s.category === 'hots')
 
+  const displayedScores =
+    activeFilter === 'all'
+      ? scores
+      : scores.filter((s) => s.category === activeFilter)
+
   const totalPossible = scores.reduce((sum, s) => sum + s.maxScore, 0)
   const percentage = totalPossible > 0 ? Math.round((totalScore / totalPossible) * 100) : 0
   let predikat = 'Perlu Peningkatan'
@@ -91,6 +139,83 @@ export default function ScoreReportModal({
   const groupMembers = groupData.members && groupData.members.length > 0
     ? groupData.members.filter(Boolean).join(', ')
     : (profile.groupMembers || '-')
+
+  // Generate and Download Microsoft Excel (.csv) with UTF-8 BOM
+  const handleDownloadCSV = () => {
+    if (scores.length === 0) {
+      alert('Belum ada riwayat nilai yang tersimpan untuk diunduh.')
+      return
+    }
+
+    const rows: string[] = []
+    // Document Title & Student Identity Meta
+    rows.push('"LAPORAN REKAPITULASI NILAI SINAUPY"')
+    rows.push(`"Nama Siswa","${studentName.replace(/"/g, '""')}"`)
+    rows.push(`"Kelas / Rombel","${studentClass.replace(/"/g, '""')}"`)
+    rows.push(`"Nama Kelompok","${groupName.replace(/"/g, '""')}"`)
+    rows.push(`"Anggota Kelompok","${groupMembers.replace(/"/g, '""')}"`)
+    rows.push(`"Total Nilai","${totalScore} Poin"`)
+    rows.push(`"Predikat Capaian","${predikat}"`)
+    rows.push(`"Tanggal Unduh","${currentDate}"`)
+    rows.push(`"Status Database","${cloudUserEmail ? `Cloud Supabase (${cloudUserEmail})` : 'Penyimpanan Lokal Peramban'}"`)
+    rows.push('') // Empty row separator
+
+    // Column Headers
+    rows.push(
+      [
+        '"No"',
+        '"Judul Misi / Aktivitas"',
+        '"Jenis Aktivitas"',
+        '"Level"',
+        '"Skor"',
+        '"Skor Maksimum"',
+        '"Persentase"',
+        '"Waktu Selesai"',
+        '"Status"',
+      ].join(',')
+    )
+
+    // Data Rows - ONLY for current student's scores
+    scores.forEach((item, idx) => {
+      const typeLabel =
+        item.category === 'individu'
+          ? 'Tantangan Berjenjang'
+          : item.category === 'kelompok'
+          ? 'Tantangan Kelompok'
+          : 'Studi Kasus HOTS'
+      const pct = item.maxScore > 0 ? `${Math.round((item.score / item.maxScore) * 100)}%` : '0%'
+
+      rows.push(
+        [
+          `"${idx + 1}"`,
+          `"${item.title.replace(/"/g, '""')}"`,
+          `"${typeLabel}"`,
+          `"Level ${item.level}"`,
+          `"${item.score}"`,
+          `"${item.maxScore}"`,
+          `"${pct}"`,
+          `"${item.completedAt}"`,
+          `"Tuntas"`,
+        ].join(',')
+      )
+    })
+
+    // UTF-8 BOM (\uFEFF) ensures Excel correctly displays accents and symbols
+    const csvContent = '\uFEFF' + rows.join('\r\n')
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
+    const cleanName = studentName.replace(/\W+/g, '_')
+    const cleanClass = studentClass.replace(/\W+/g, '_')
+    const fileName = `Nilai_Saya_SinauPy_${cleanName}_${cleanClass}.csv`
+
+    const url = URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = url
+    link.download = fileName
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+    URL.revokeObjectURL(url)
+  }
 
   // Generate and Download Microsoft Word (.doc) File
   const handleDownloadWord = () => {
@@ -285,7 +410,7 @@ export default function ScoreReportModal({
         <td style="width: 25%;">
           <div style="font-size: 8.5pt; color: #555;">STUDI KASUS HOTS</div>
           <div style="font-size: 14pt; font-weight: bold; margin: 3px 0;">${hotsScores.length} Kasus</div>
-          <div style="font-size: 8pt; color: #666;">Analitis C4 - C6</div>
+          <div style="font-size: 8pt; color: #666;">Analisis C4 - C6</div>
         </td>
       </tr>
     </table>
@@ -360,7 +485,7 @@ export default function ScoreReportModal({
   }
 
   const handleReset = () => {
-    if (confirm('Apakah kamu yakin ingin mengosongkan semua riwayat nilai tantangan?')) {
+    if (confirm('Apakah kamu yakin ingin mengosongkan semua riwayat nilai tantangan di peramban ini?')) {
       resetAllScores()
       reloadData()
     }
@@ -377,8 +502,8 @@ export default function ScoreReportModal({
       >
         <div className="modal-header no-print">
           <div>
-            <span className="modal-badge">LEMBAR ASESMEN FORMATIF</span>
-            <h3 id="score-modal-title">Rekap Hasil Belajar & Nilai Tantangan</h3>
+            <span className="modal-badge">PORTAL NILAI SAYA</span>
+            <h3 id="score-modal-title">Rekap Nilai & Capaian Belajar</h3>
           </div>
           <button className="modal-close-btn" type="button" onClick={onClose} aria-label="Tutup">
             <IconClose />
@@ -387,6 +512,44 @@ export default function ScoreReportModal({
 
         {/* Printable & Document Styled Paper Sheet */}
         <div className="score-report-content" id="printable-score-area">
+          {/* Cloud Database Connection Status Banner (no-print) */}
+          <div className="cloud-sync-status-bar no-print">
+            <div className="cloud-status-left">
+              <span className={`cloud-dot ${cloudUserEmail ? 'online' : 'local'}`} />
+              <div className="cloud-status-text">
+                <strong>Status Database: </strong>
+                {cloudUserEmail ? (
+                  <span>
+                    Terhubung Cloud Supabase ({cloudUserEmail})
+                  </span>
+                ) : isSupabaseConfigured() ? (
+                  <span>Mode Tamu / Lokal (Masuk dengan akun untuk mengaktifkan sinkronisasi cloud)</span>
+                ) : (
+                  <span>Penyimpanan Lokal Aktif (Supabase belum diisi di environment)</span>
+                )}
+              </div>
+            </div>
+
+            {isSupabaseConfigured() && (
+              <button
+                type="button"
+                className="btn-sync-cloud"
+                onClick={handleSyncCloud}
+                disabled={isSyncing}
+                title="Sinkronkan nilai lokal dengan database cloud Supabase"
+              >
+                {isSyncing ? 'Menyinkronkan...' : '🔄 Sinkronkan Nilai'}
+              </button>
+            )}
+          </div>
+
+          {syncStatusMsg && (
+            <div className="sync-toast-alert no-print" role="status">
+              <IconCheck />
+              <span>{syncStatusMsg}</span>
+            </div>
+          )}
+
           {/* Formal Academic KOP Header */}
           <div className="academic-doc-header">
             <div className="doc-kop-kicker">MEDIA PEMBELAJARAN INFORMATIKA SMA / SMK</div>
@@ -467,17 +630,56 @@ export default function ScoreReportModal({
             </div>
           </div>
 
+          {/* Activity Filter Strip (no-print) */}
+          <div className="score-filter-bar no-print">
+            <span className="filter-label">Filter Aktivitas:</span>
+            <div className="filter-pills-group">
+              <button
+                type="button"
+                className={`filter-pill ${activeFilter === 'all' ? 'active' : ''}`}
+                onClick={() => setActiveFilter('all')}
+              >
+                Semua Aktivitas ({scores.length})
+              </button>
+              <button
+                type="button"
+                className={`filter-pill ${activeFilter === 'individu' ? 'active' : ''}`}
+                onClick={() => setActiveFilter('individu')}
+              >
+                Tantangan Berjenjang ({individuScores.length})
+              </button>
+              <button
+                type="button"
+                className={`filter-pill ${activeFilter === 'kelompok' ? 'active' : ''}`}
+                onClick={() => setActiveFilter('kelompok')}
+              >
+                Tantangan Kelompok ({kelompokScores.length})
+              </button>
+              <button
+                type="button"
+                className={`filter-pill ${activeFilter === 'hots' ? 'active' : ''}`}
+                onClick={() => setActiveFilter('hots')}
+              >
+                Studi Kasus HOTS ({hotsScores.length})
+              </button>
+            </div>
+          </div>
+
           {/* Table of Tasks & Scores */}
           <div className="score-table-wrap">
             <div className="score-table-header no-print">
               <h4>Daftar Misi Koding yang Diselesaikan</h4>
-              <span className="score-count-badge">{scores.length} Tugas Selesai</span>
+              <span className="score-count-badge">{displayedScores.length} Tugas Ditampilkan</span>
             </div>
 
-            {scores.length === 0 ? (
+            {displayedScores.length === 0 ? (
               <div className="empty-scores">
                 <IconTrophy className="empty-scores-icon" />
-                <p>Belum ada nilai tantangan yang tersimpan.</p>
+                <p>
+                  {scores.length === 0
+                    ? 'Belum ada nilai tantangan yang tersimpan.'
+                    : 'Tidak ada tugas yang cocok dengan filter yang dipilih.'}
+                </p>
                 <small>
                   Pilih misi koding di halaman Tantangan Berjenjang atau Tantangan Kelompok, selesaikan hingga lolos kasus uji, lalu klik tombol
                   "Simpan Nilai" untuk mencatat capaian belajarmu di dokumen ini.
@@ -493,11 +695,11 @@ export default function ScoreReportModal({
                     <th style={{ width: '80px' }} className="col-center">Level</th>
                     <th style={{ width: '100px' }} className="col-center">Nilai</th>
                     <th style={{ width: '130px' }} className="col-center">Waktu Selesai</th>
-                    <th style={{ width: '75px' }} className="col-center">Status</th>
+                    <th style={{ width: '85px' }} className="col-center">Status</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {scores.map((item, idx) => (
+                  {displayedScores.map((item, idx) => (
                     <tr key={item.challengeId}>
                       <td className="col-center">{idx + 1}</td>
                       <td>
@@ -520,9 +722,19 @@ export default function ScoreReportModal({
                       </td>
                       <td className="col-center col-date">{item.completedAt}</td>
                       <td className="col-center">
-                        <span className="status-pill-done">
-                          <IconCheck /> Tuntas
-                        </span>
+                        {item.cloudSyncStatus === 'synced' ? (
+                          <span className="status-pill-done" title="Tersinkronisasi aman di Supabase">
+                            <IconCheck /> Cloud
+                          </span>
+                        ) : item.cloudSyncStatus === 'error' ? (
+                          <span className="status-pill-error" title={item.cloudErrorMsg || 'Sinkronisasi gagal'}>
+                            <IconAlert /> Lokal
+                          </span>
+                        ) : (
+                          <span className="status-pill-done" title="Tersimpan di perangkat lokal">
+                            <IconCheck /> Tuntas
+                          </span>
+                        )}
                       </td>
                     </tr>
                   ))}
@@ -552,22 +764,40 @@ export default function ScoreReportModal({
 
           <div className="score-report-footer no-print">
             <p>
-              💡 Dokumen ini mencatat seluruh nilai asesmen formatif koding secara transparan. Nilai dapat diunduh dalam format <strong>Word (.doc)</strong> atau <strong>PDF</strong> untuk diserahkan kepada guru.
+              💡 Dokumen ini mencatat seluruh nilai asesmen formatif koding secara transparan. Nilai dapat diekspor ke <strong>Excel (.csv)</strong>, diunduh dalam format <strong>Word (.doc)</strong>, atau dicetak ke <strong>PDF</strong> untuk diserahkan kepada guru.
             </p>
           </div>
         </div>
 
         {/* Action Controls Bar */}
         <div className="modal-actions no-print">
-          <button type="button" className="btn-reset" onClick={handleReset} title="Hapus riwayat nilai">
+          <button type="button" className="btn-reset" onClick={handleReset} title="Hapus riwayat nilai lokal">
             <IconTrash /> Reset Nilai
           </button>
 
           <div className="modal-actions-right">
-            <button type="button" className="btn-download-word" onClick={handleDownloadWord} title="Unduh dokumen Word">
+            <button
+              type="button"
+              className="btn-download-csv"
+              onClick={handleDownloadCSV}
+              title="Ekspor laporan nilai siswa ke format Microsoft Excel (.csv)"
+            >
+              <IconDownload /> Unduh Nilai Saya (CSV)
+            </button>
+            <button
+              type="button"
+              className="btn-download-word"
+              onClick={handleDownloadWord}
+              title="Unduh dokumen Word (.doc)"
+            >
               <IconDownload /> Unduh Word (.doc)
             </button>
-            <button type="button" className="btn-download-pdf" onClick={handleDownloadPDF} title="Unduh dokumen PDF atau cetak">
+            <button
+              type="button"
+              className="btn-download-pdf"
+              onClick={handleDownloadPDF}
+              title="Unduh dokumen PDF atau cetak"
+            >
               <IconPrinter /> Unduh PDF / Cetak
             </button>
             <button type="button" className="btn-cancel" onClick={onClose}>

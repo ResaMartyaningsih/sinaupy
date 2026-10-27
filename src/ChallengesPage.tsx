@@ -26,18 +26,25 @@ import './ChallengesPage.css'
 type TabType = 'individu' | 'hots'
 
 type ChallengesPageProps = {
-  onBackHome: () => void
+  onBack?: () => void
+  onBackHome?: () => void
   onOpenProfile: () => void
   onOpenScores: () => void
   onNavigateToGroup?: () => void
 }
 
 export default function ChallengesPage({
+  onBack,
   onBackHome,
   onOpenProfile,
   onOpenScores,
   onNavigateToGroup,
 }: ChallengesPageProps) {
+  const handleBack = () => {
+    if (onBack) onBack()
+    else if (onBackHome) onBackHome()
+    else window.history.back()
+  }
   const [activeTab, setActiveTab] = useState<TabType>('individu')
   const [selectedLevel, setSelectedLevel] = useState<number | 'all'>('all')
   const [profile, setProfile] = useState<StudentProfile>(getStudentProfile)
@@ -76,13 +83,14 @@ export default function ChallengesPage({
       <div className="challenges-top-bar">
         <a
           className="back-home-link"
-          href="#beranda"
+          href="#kembali"
           onClick={(event) => {
             event.preventDefault()
-            onBackHome()
+            handleBack()
           }}
+          title="Kembali ke halaman sebelumnya"
         >
-          <IconArrowLeft /> Kembali ke Beranda
+          <IconArrowLeft /> Kembali
         </a>
 
         {/* Student Status Strip with Clear Framing */}
