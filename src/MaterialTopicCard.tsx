@@ -1,12 +1,24 @@
 import { useState, useEffect, useMemo } from 'react'
 import CodePlayground from './CodePlayground'
 import { materialCategories, type MaterialTopic } from './materialsData'
-import { IconCopy, IconCheck, IconAlert, IconBrain, IconBook, IconCode } from './Icons'
+import {
+  IconCopy,
+  IconCheck,
+  IconAlert,
+  IconBrain,
+  IconBook,
+  IconCode,
+  IconArrowRight,
+} from './Icons'
 
 type MaterialTopicCardProps = {
   topic: MaterialTopic
   number: string
   categoryTitle?: string
+  isCompleted?: boolean
+  hasNextTopic?: boolean
+  onCompleteTopic?: () => void
+  onNextTopic?: () => void
   onOpenCategoryDiscovery?: () => void
 }
 
@@ -82,6 +94,10 @@ export default function MaterialTopicCard({
   topic,
   number,
   categoryTitle,
+  isCompleted = false,
+  hasNextTopic = false,
+  onCompleteTopic,
+  onNextTopic,
   onOpenCategoryDiscovery,
 }: MaterialTopicCardProps) {
   const [copyStatus, setCopyStatus] = useState('')
@@ -117,6 +133,15 @@ export default function MaterialTopicCard({
         <div className="topic-badge-group">
           <span className="topic-number-badge">Sub-Materi #{number}</span>
           {categoryTitle && <span className="topic-cat-badge">{categoryTitle}</span>}
+          <span className={`topic-status-pill ${isCompleted ? 'is-completed' : 'in-progress'}`}>
+            {isCompleted ? (
+              <>
+                <IconCheck /> Selesai Dipelajari
+              </>
+            ) : (
+              'Sedang Dipelajari'
+            )}
+          </span>
         </div>
 
         {onOpenCategoryDiscovery && (
@@ -126,7 +151,8 @@ export default function MaterialTopicCard({
             onClick={onOpenCategoryDiscovery}
             title="Buka Unit Aktivitas Discovery Learning untuk 1 Materi Bab ini"
           >
-            <IconBrain /> Unit Inkuiri Bab Ini
+            <IconBrain />
+            <span>Unit Inkuiri Bab Ini</span>
           </button>
         )}
       </div>
@@ -323,14 +349,70 @@ export default function MaterialTopicCard({
         </div>
       </details>
 
-      {/* Cross-Link Banner to Whole-Chapter Discovery Learning Unit */}
+      {/* Completion Section: Selesaikan Sub-Materi & Buka Materi Berikutnya */}
+      <section
+        className={`topic-completion-card ${isCompleted ? 'is-completed' : 'pending'}`}
+        aria-label="Penyelesaian Sub-Materi"
+      >
+        <div className="completion-card-inner">
+          <div className="completion-icon-box">
+            {isCompleted ? <IconCheck /> : <IconBook />}
+          </div>
+          <div className="completion-info">
+            <span className="completion-kicker">
+              {isCompleted ? 'STATUS CAPAIAN: SELESAI' : 'LEMBAR PENYELESAIAN'}
+            </span>
+            <h3 className="completion-heading">
+              {isCompleted
+                ? `Sub-Materi #${number} Telah Diselesaikan!`
+                : `Selesaikan Sub-Materi #${number}: ${topic.title}`}
+            </h3>
+            <p className="completion-instruction">
+              {isCompleted
+                ? 'Bagus sekali! Kamu telah menuntaskan pemahaman teori, kuis prediksi logika, dan praktik mandiri pada sub-materi ini. Materi berikutnya kini telah terbuka dan dapat dipelajari.'
+                : 'Setelah memahami penjelasan konsep, memverifikasi kuis prediksi keluaran, dan mencoba eksperimen koding di atas, klik tombol di bawah untuk menyelesaikan sub-materi ini dan membuka materi selanjutnya.'}
+            </p>
+          </div>
+        </div>
+
+        <div className="completion-action-bar">
+          {!isCompleted ? (
+            <button
+              type="button"
+              className="btn-mark-completed"
+              onClick={onCompleteTopic}
+              title="Tandai sub-materi ini selesai dan buka materi berikutnya di katalog"
+            >
+              <IconCheck /> Selesaikan Sub-Materi & Buka Materi Berikutnya
+            </button>
+          ) : (
+            <div className="completed-controls">
+              <span className="completion-status-done">
+                <IconCheck /> Tuntas Dipelajari
+              </span>
+              {hasNextTopic && onNextTopic && (
+                <button
+                  type="button"
+                  className="btn-go-next-topic"
+                  onClick={onNextTopic}
+                  title="Lanjut langsung ke sub-materi berikutnya"
+                >
+                  Lanjut ke Sub-Materi Berikutnya <IconArrowRight />
+                </button>
+              )}
+            </div>
+          )}
+        </div>
+      </section>
+
+      {/* Cross-Link Banner to Whole-Chapter Discovery Learning Unit (Selalu Terbuka) */}
       {onOpenCategoryDiscovery && (
         <div className="discovery-unit-invite-banner">
           <div className="invite-left">
             <span className="invite-kicker">SIAP UNTUK EKSPLORASI LEBIH MENDALAM?</span>
-            <h4 className="invite-title">Aktivitas Discovery Learning (Unit 1 Materi Utuh)</h4>
+            <h4 className="invite-title">Aktivitas Discovery Learning (Unit 1 Bab Utuh)</h4>
             <p className="invite-desc">
-              Terapkan seluruh konsep yang kamu pelajari dalam bab ini melalui 6 sintaks pembelajaran penemuan:
+              Terapkan pemahaman konsep yang kamu pelajari dalam bab ini melalui 6 sintaks pembelajaran penemuan:
               Stimulasi fenomena, perumusan hipotesis, eksperimen mandiri, tabel observasi, pembuktian, dan penarikan kesimpulan.
             </p>
           </div>
@@ -338,8 +420,10 @@ export default function MaterialTopicCard({
             type="button"
             className="btn-open-unit-discovery"
             onClick={onOpenCategoryDiscovery}
+            title="Buka Unit Discovery Learning Bab Ini"
           >
-            <IconBrain /> Buka Unit Discovery Learning Bab Ini
+            <IconBrain />
+            <span>Buka Unit Discovery Learning Bab Ini</span>
           </button>
         </div>
       )}

@@ -395,3 +395,59 @@ export function saveDiscoveryData(topicKey: string, partial: Partial<DiscoveryNo
     // ignore
   }
 }
+
+/* ==========================================================================
+   Completed Sub-Materials (Sequential Progression & Topic Locking)
+   ========================================================================== */
+const COMPLETED_TOPICS_KEY = 'sinaupy_completed_topics'
+
+export function getCompletedTopicIds(): string[] {
+  try {
+    const raw = localStorage.getItem(COMPLETED_TOPICS_KEY)
+    if (raw) {
+      return JSON.parse(raw) as string[]
+    }
+  } catch {
+    // ignore
+  }
+  return []
+}
+
+export function isTopicCompleted(topicId: string): boolean {
+  const current = getCompletedTopicIds()
+  return current.includes(topicId)
+}
+
+export function saveCompletedTopicId(topicId: string): string[] {
+  try {
+    const current = getCompletedTopicIds()
+    if (!current.includes(topicId)) {
+      current.push(topicId)
+      localStorage.setItem(COMPLETED_TOPICS_KEY, JSON.stringify(current))
+      window.dispatchEvent(new Event('sinaupy:topic_completed'))
+    }
+    return current
+  } catch {
+    return []
+  }
+}
+
+export function removeCompletedTopicId(topicId: string): string[] {
+  try {
+    const current = getCompletedTopicIds().filter((id) => id !== topicId)
+    localStorage.setItem(COMPLETED_TOPICS_KEY, JSON.stringify(current))
+    window.dispatchEvent(new Event('sinaupy:topic_completed'))
+    return current
+  } catch {
+    return []
+  }
+}
+
+export function resetCompletedTopics(): void {
+  try {
+    localStorage.removeItem(COMPLETED_TOPICS_KEY)
+    window.dispatchEvent(new Event('sinaupy:topic_completed'))
+  } catch {
+    // ignore
+  }
+}
